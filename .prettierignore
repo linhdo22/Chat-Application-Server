@@ -1,0 +1,8 @@
+**/node_modules/**
+/public/dist/
+/package.json
+/package-lock.json
+/yarn.lock
+/Targets.txt
+/.vscode
+/.gitignore

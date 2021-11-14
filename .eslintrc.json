@@ -1,0 +1,29 @@
+{
+	"root": true,
+	"parser": "babel-eslint",
+	"env": {
+		"node": true,
+		"browser": true,
+		"es6": true,
+		"commonjs": true
+	},
+	"extends": ["standard", "prettier", "plugin:react/recommended"],
+	"parserOptions": {
+		"ecmaVersion": 2018,
+		"ecmaFeatures": {
+			"jsx": true
+		}
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		}
+	},
+	"rules": {
+		"space-infix-ops": "warn",
+		"no-console": [1],
+		"spaced-comment": [1],
+		"react/prop-types": [0]
+	},
+	"ignorePatterns": ["/gulpfile.js", "pulic/dist/*.js", "public/sw.js"]
+}

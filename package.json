@@ -1,0 +1,43 @@
+{
+  "name": "web-from-scratch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp",
+    "analyzer": "cross-env ANALYZER=analyzer webpack"
+  },
+  "author": "linh do",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "connect-livereload": "^0.6.1",
+    "connect-mongo": "^4.4.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "glob": "^7.1.7",
+    "lodash": "^4.17.21",
+    "mongodb": "^3.6.10",
+    "mongoose": "^5.13.2",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "socket.io": "^4.3.2"
+  },
+  "licenses": [],
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-nodemon": "^2.5.0",
+    "lint-staged": "^11.0.0"
+  }
+}
