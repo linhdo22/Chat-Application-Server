@@ -4,14 +4,27 @@ const Scheme = mongoose.Schema
 
 const UserSchema = new Scheme(
 	{
-		name: { type: String, required:'Must have a name' },
+		name: { type: String, required: 'Must have a name' },
 		age: Number,
 		dateOfBirth: { type: Date },
-		avata: { type: String },
+		avatarRef: { type: String },
+		gender: { type: String, enum: ['male', 'female'] },
 		username: { type: String, unique: true, required: 'Username invalid' },
 		password: { type: String },
 		salt: { type: String },
-		friends: [{ type: Scheme.Types.ObjectId, ref: 'Users' }],
+		friends: [
+			{
+				user: { type: Scheme.Types.ObjectId, ref: 'Users' },
+				channel: { type: Scheme.Types.ObjectId, ref: 'Channel' },
+			},
+		],
+		channels: [{ type: Scheme.Types.ObjectId, ref: 'Channel' }],
+		notification: [
+			{
+				detail: { type: Scheme.Types.ObjectId, ref: 'Notification' },
+				isSeen: Boolean,
+			},
+		],
 	},
 	{
 		timestamps: true,

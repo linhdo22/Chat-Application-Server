@@ -10,6 +10,7 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (id, done) {
 	Users.findById(id)
 		.select('-password -salt')
+		.slice('notification', 10)
 		.exec()
 		.then((user) => {
 			done(null, user)

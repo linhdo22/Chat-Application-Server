@@ -1,17 +1,19 @@
 const mongoose = require('mongoose')
 const Scheme = mongoose.Schema
 
+const MessageSchema = new mongoose.Schema({
+	sendBy: { type: mongoose.SchemaTypes.ObjectId, ref: 'Users' },
+	type: { type: String, enum: ['text', 'noti', 'reminder', 'call'] },
+	content: String,
+	time: Date,
+})
+mongoose.model('Message', MessageSchema)
 const ChannelSchema = new Scheme(
 	{
+		logoRef: { type: String },
 		title: { type: String },
 		type: { type: String, enum: ['private', 'group'] },
-		messages: [
-			{
-				sendBy: { type: mongoose.SchemaTypes.ObjectId, ref: 'Users' },
-				content: String,
-				time: Date,
-			},
-		],
+		messages: [MessageSchema],
 		participants: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Users' }],
 	},
 	{

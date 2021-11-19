@@ -6,6 +6,7 @@ const config = require('./config')
 
 module.exports = function () {
 	mongoose.set('useCreateIndex', true)
+	mongoose.set('useFindAndModify', false)
 	mongoose
 		.connect(
 			`mongodb://${config.db.host}:${config.db.port}/${config.db.collection}`,
