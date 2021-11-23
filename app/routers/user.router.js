@@ -18,6 +18,7 @@ module.exports = function (app) {
 		Users.responseFriendRequest
 	)
 	app.get('/api/user/notification', Users.requiresLogin, Users.getNotification)
+	app.post('/api/user/remove-friend', Users.requiresLogin, Users.removeFriend)
 	app
 		.route('/api/user/request-friend')
 		.post(Users.requiresLogin, Users.requestFriend)

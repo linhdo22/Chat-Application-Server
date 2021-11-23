@@ -9,6 +9,7 @@ module.exports = function (app) {
 		Users.requiresLogin,
 		Channel.getLastestList
 	)
+	app.get('/api/channel/get-members', Users.requiresLogin, Channel.getMembers)
 	app.post(
 		'/api/channel/send-message',
 		Users.requiresLogin,

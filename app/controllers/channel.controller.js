@@ -4,28 +4,19 @@ const Users = mongoose.model('Users')
 const { getObjectId } = require('../../config/helper')
 const { updateLastest } = require('../../config/socket-io')
 
-module.exports.updateUserInfo = async (req, res, next) => {
-	const result = await Users.findOneAndUpdate({ _id: req.user._id }, req.body, {
-		new: true,
-	})
-		.select('-password -salt')
-		.exec()
-	res.jsonp(result)
-}
-
 module.exports.createGroup = async (req, res) => {
-	let { title, members } = req.body
+	let { title, participants } = req.body
 	if (!title) {
 		res.status(403).jsonp({ error: 'Invalid group name' })
 		return
 	}
-	if (!members) {
-		members = []
+	if (!participants) {
+		participants = []
 	}
 	const newChannel = await new Channel({
 		type: 'group',
 		title,
-		participants: [req.user.id, ...members],
+		participants: [req.user.id, ...participants],
 		messages: [
 			{
 				type: 'noti',
@@ -36,7 +27,7 @@ module.exports.createGroup = async (req, res) => {
 	}).save()
 
 	await Users.updateMany(
-		{ _id: { $in: [req.user.id, ...members] } },
+		{ _id: { $in: [req.user.id, ...participants] } },
 		{
 			$addToSet: { channels: newChannel._id },
 		}
@@ -48,12 +39,24 @@ module.exports.getLastestList = async (req, res) => {
 	res.jsonp(req.user.channels)
 }
 
+module.exports.getMembers = async (req, res) => {
+	const { channelId } = req.query
+	const channel = await Channel.findById(channelId)
+		.populate({
+			path: 'participants',
+			select: '-password -salt',
+		})
+		.exec()
+	res.jsonp(channel.participants)
+}
+
 module.exports.getChannels = async (req, res) => {
+	const friendChannels = req.user.friends.map((friend) => {
+		return friend.channel
+	})
+	console.log(friendChannels)
 	const result = await Channel.find({
-		$or: [
-			{ _id: { $in: req.body } },
-			{ type: 'private', participants: req.user._id },
-		],
+		_id: { $in: [...req.user.channels, ...friendChannels] },
 	})
 		.slice('messages', 1)
 		.lean()
@@ -84,7 +87,7 @@ module.exports.updateMessage = async (req, res) => {
 	const { channelId, time } = req.body
 	const result = await Channel.findById(channelId)
 		.select('messages')
-		.slice('messages', 10)
+		.slice('messages', 5)
 		.exec()
 	res.jsonp(result.messages)
 }

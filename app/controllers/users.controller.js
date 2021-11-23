@@ -44,9 +44,13 @@ module.exports.register = async (req, res) => {
 	if (!req.body) {
 		res.status(403).send('invalid body')
 	}
-	const user = new Users(req.body)
-	await user.save()
-	res.json(await Users.findOne({ username: req.body.username }).exec())
+	try {
+		const user = new Users(req.body)
+		await user.save()
+		res.json(await Users.findOne({ username: req.body.username }).exec())
+	} catch (error) {
+		res.status(403).jsonp(error)
+	}
 }
 
 module.exports.getUserInfo = (req, res, next) => {
@@ -68,13 +72,38 @@ module.exports.findUsers = async (req, res) => {
 			message: 'Invalid name',
 		})
 	}
+	const listFriend = req.user.friends.map((friendMap) => {
+		return friendMap.user
+	})
 	const result = await Users.find({
 		name: new RegExp(name, 'i'),
-		_id: { $ne: req.user._id },
+		_id: { $nin: [req.user._id, ...listFriend] },
 	})
 		.select('-password -salt')
 		.exec()
 	res.jsonp(result)
+}
+
+module.exports.removeFriend = async (req, res) => {
+	const { friendId, channelId } = req.body
+	if (friendId == '') {
+		res.status(400).send({
+			message: 'Invalid id',
+		})
+	}
+	const removeFromUser = await Users.updateMany(
+		{
+			_id: { $in: [req.user._id, friendId] },
+		},
+		{
+			$pull: {
+				friends: { user: { $in: [req.user._id, friendId] } },
+			},
+		}
+	).exec()
+	res.jsonp(removeFromUser)
+	updateLastest('friends', {}, [req.user._id, friendId])
+	updateLastest('channels', {}, [req.user._id, friendId])
 }
 
 module.exports.requestFriend = async (req, res) => {
@@ -156,15 +185,13 @@ module.exports.responseFriendRequest = async (req, res) => {
 				},
 			},
 			{
-				$setOnInsert: {
-					type: 'private',
-					participants: [req.user._id, sendBy],
-					$push: {
-						messages: {
-							type: 'noti',
-							time: new Date(),
-							content: 'Created new channel',
-						},
+				type: 'private',
+				participants: [req.user._id, sendBy],
+				$push: {
+					messages: {
+						type: 'noti',
+						time: new Date(),
+						content: 'You guys become friends',
 					},
 				},
 			},
@@ -173,6 +200,7 @@ module.exports.responseFriendRequest = async (req, res) => {
 				upsert: true,
 			}
 		).exec()
+		console.log(privateChannel)
 		await Users.bulkWrite([
 			{
 				updateOne: {
@@ -214,8 +242,9 @@ module.exports.responseFriendRequest = async (req, res) => {
 	}).exec()
 	Promise.all([await removeFromUser, await removeFromNotification]).then(
 		(result) => {
-			updateLastest('friends', {}, [req.user._id, sendBy])
 			res.jsonp(result)
+			updateLastest('friends', {}, [req.user._id, sendBy])
+			updateLastest('notification', {}, [req.user._id])
 		}
 	)
 }
@@ -223,7 +252,7 @@ module.exports.responseFriendRequest = async (req, res) => {
 module.exports.getFriends = async (req, res) => {
 	const result = await Users.findById(req.user._id)
 		.select('friends')
-		.populate('friends.user')
+		.populate({ path: 'friends.user', select: '-password -salt' })
 		.lean()
 		.exec()
 	res.jsonp(result.friends)

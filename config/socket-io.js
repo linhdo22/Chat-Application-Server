@@ -19,9 +19,11 @@ module.exports = {
 }
 module.exports.updateLastest = (type, options, userIds) => {
 	let command = `have-new-${type}`
-
+	const stringUserIds = userIds.map((userId) => {
+		return userId.toString()
+	})
 	usersMap.forEach((userMap) => {
-		if (userIds.includes(userMap.id)) {
+		if (stringUserIds.includes(userMap.id)) {
 			io.to(userMap.socket).emit(command, options)
 		}
 	})
