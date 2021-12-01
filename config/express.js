@@ -27,6 +27,9 @@ module.exports = function () {
 		next()
 	})
 
+	app.get('/', (req, res) => {
+		res.send('home')
+	})
 	// set public file like libraries and bundle
 	app.use(express.static(path.join(__dirname, '../public')))
 
