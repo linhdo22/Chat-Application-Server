@@ -189,9 +189,14 @@ module.exports.responseFriendRequest = async (req, res) => {
 				participants: [req.user._id, sendBy],
 				$push: {
 					messages: {
-						type: 'noti',
-						time: new Date(),
-						content: 'You guys become friends',
+						$each: [
+							{
+								type: 'noti',
+								time: new Date(),
+								content: 'You guys become friends',
+							},
+						],
+						$position: 0,
 					},
 				},
 			},
@@ -252,7 +257,10 @@ module.exports.responseFriendRequest = async (req, res) => {
 module.exports.getFriends = async (req, res) => {
 	const result = await Users.findById(req.user._id)
 		.select('friends')
-		.populate({ path: 'friends.user', select: '-password -salt' })
+		.populate({
+			path: 'friends.user',
+			select: 'name gender dateOfBirth friends',
+		})
 		.lean()
 		.exec()
 	res.jsonp(result.friends)

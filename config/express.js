@@ -8,7 +8,6 @@ const passport = require('passport')
 const path = require('path')
 const app = express()
 
-const SocketIO = require('./socket-io')
 const port = config.server.port || 3000
 
 module.exports = function () {
@@ -40,7 +39,7 @@ module.exports = function () {
 	// create session storage
 	const sessionStore = mongoStore.create({
 		mongoUrl: `mongodb://${config.db.host}:${config.db.port}/${config.db.collection}`,
-		ttl:3600 // 1 hour
+		ttl: 3600, // 1 hour
 	})
 
 	// config session
@@ -62,5 +61,6 @@ module.exports = function () {
 	const routerpaths = glob.sync('./app/routers/**/*.router.js')
 	routerpaths.forEach((path) => require('../' + path)(app))
 
+	const SocketIO = require('./socket-io')
 	SocketIO.initServer({ app, port })
 }
