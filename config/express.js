@@ -41,7 +41,9 @@ module.exports = function () {
 
 	// create session storage
 	const sessionStore = mongoStore.create({
-		mongoUrl: `mongodb://${config.db.host}:${config.db.port}/${config.db.collection}`,
+		// mongoUrl: `mongodb://${config.db.host}:${config.db.port}/${config.db.collection}`,
+		mongoUrl:
+			'mongodb+srv://zulu:4sKv3ejLzLEcMSPA@cluster0.39kmy.mongodb.net/zulu?retryWrites=true&w=majority',
 		ttl: 3600, // 1 hour
 	})
 
