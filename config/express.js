@@ -8,7 +8,7 @@ const passport = require('passport')
 const path = require('path')
 const app = express()
 
-const port = config.server.port || 3000
+const port = process.env.PORT || 3000
 
 module.exports = function () {
 	// import models
